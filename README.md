@@ -1,8 +1,3 @@
-Claro! Aqui está o conteúdo pronto para salvar como `README.md` no seu projeto **frontend**:
-
----
-
-```md
 # Trello.ia – Frontend
 
 Interface web do projeto **Trello.ia**, um clone do Trello com funcionalidades de inteligência artificial. Desenvolvido com foco em boas práticas, escalabilidade e open source.
@@ -68,6 +63,8 @@ services:
 - Testes Jest configurados com cobertura
 - Teste de Redux (boardSlice) criado e aprovado
 - Docker configurado com porta 3002
+- Deploy gratuito via **Vercel**
+- CI/CD automatizado com **GitHub Actions**
 
 ---
 
@@ -121,4 +118,3 @@ Em breve definido.
 
 Desenvolvido por **Wildemberg de Jesus Oliveira**  
 Perfil: [LinkedIn](https://www.linkedin.com/in/wildemberg-de-jesus-oliveira/) – Desenvolvedor Fullstack Pleno
-```
