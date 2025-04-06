@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: trelloia-frontend
+    build:
+      context: .
+    ports:
+      - '3002:3002'
+    env_file:
+      - .env.local
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: pnpm run dev
+    restart: unless-stopped

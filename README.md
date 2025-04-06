@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Trello.ia – Projeto Fullstack com IA integrada
 
-## Getting Started
+Este é um projeto fullstack inspirado no Trello, com suporte a funcionalidades inteligentes via IA. Desenvolvido com foco em boas práticas, arquitetura limpa, testes automatizados, CI/CD e deploy em produção.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📦 Tecnologias Utilizadas
+
+### 🧩 **Frontend** (Next.js + React)
+
+- **Next.js 15** – App Router, SSR, optimizações modernas
+- **React 19** – Biblioteca principal de UI
+- **TypeScript** – Tipagem estática e confiável
+- **Tailwind CSS** – Estilização rápida e responsiva
+- **Shadcn UI** – Componentes acessíveis baseados em Tailwind
+- **Redux Toolkit** – Estado global estruturado por domínio
+- **Zustand** – Estado leve (modais, interações locais)
+- **Jest + React Testing Library** – Testes unitários
+- **Cypress** – Testes E2E com fluxo de usuário
+
+### ⚙️ **Backend** (NestJS)
+
+- **NestJS** – Estrutura modular e escalável com TypeScript
+- **Prisma ORM** – Acesso ao banco de dados com schema tipado
+- **PostgreSQL** – Banco relacional (via Docker)
+- **JWT** – Autenticação segura por token
+- **Supertest + Jest** – Testes de integração e e2e no backend
+
+### ☁️ **Infraestrutura**
+
+- **Docker + Docker Compose** – Containerização do banco
+- **CapRover** – Deploy self-hosted do backend
+- **Vercel** – Deploy automático do frontend
+- **GitHub Actions** – CI/CD com testes e deploy automático
+
+---
+
+## 📁 Estrutura geral do backend
+
+```
+├── src/
+│   ├── main.ts                     # Bootstrap da aplicação NestJS
+│   ├── app.module.ts               # Módulo raiz
+│   ├── modules/                    # Domínios (boards, auth, etc)
+│   │   ├── boards/                 # CRUD e lógica de Boards
+│   │   └── auth/                   # Login, JWT, guardas
+│   ├── shared/                     # Interceptadores, filtros, decorators
+│   ├── prisma/                     # Schema e client do Prisma
+│   ├── config/                     # Variáveis de ambiente e loaders
+│   └── main.test.ts                # Teste de bootstrap
+│
+├── test/                           # Testes E2E com Supertest
+├── docker-compose.yml              # Banco de dados PostgreSQL
+├── .env                            # Variáveis do ambiente
+├── jest.config.ts                  # Configuração dos testes
+├── tsconfig.json                   # TypeScript config
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Como rodar o projeto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Instruções de instalação e execução virão na próxima etapa.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📌 Status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✅ Estrutura inicial completa  
+🚧 Desenvolvimento em andamento  
+☑️ MVP definido e em construção
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🧑‍💻 Autor
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Desenvolvido por **Will**  
+Perfil: [LinkedIn](https://www.linkedin.com/in/wildemberg-de-jesus-oliveira/) – Desenvolvedor Fullstack JS/.NET
