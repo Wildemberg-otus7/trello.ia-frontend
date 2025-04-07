@@ -11,33 +11,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout do repositório
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
+      # 2. Instala Node.js + ativa Corepack para usar pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: 'pnpm'
 
+      # 3. Ativa o Corepack e prepara o pnpm
       - name: Enable Corepack and Setup pnpm
         run: |
           corepack enable
           corepack prepare pnpm@10.7.1 --activate
           pnpm -v
 
+      # 4. Instala dependências com pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 5. Verifica formatação com Prettier
       - name: Check code formatting (Prettier)
-        run: pnpm format --check
+        run: pnpm exec prettier --check .
 
+      # 6. Roda os testes com Jest
       - name: Run tests (Jest)
         run: pnpm run test
 
+      # 7. Build do projeto
       - name: Build Next.js application
         run: pnpm run build
 
+      # 8. Deploy para a Vercel (apenas em push na main)
       - name: Deploy to Vercel
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: amondnet/vercel-action@v25
@@ -45,8 +53,5 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-args: '--prod'
-          working-directory: ./trello.ia-frontend
-          vercel-branch: main
-          vercel-project-name: trello.ia-frontend
+          github-token: ${{ secrets.GITHUB_TOKEN }}
