@@ -11,41 +11,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout do repositório
+      # 1. Clona o repositório
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Instala Node.js + ativa Corepack para usar pnpm
+      # 2. Instala Node.js e configura cache para pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      # 3. Ativa o Corepack e prepara o pnpm
-      - name: Enable Corepack and Setup pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.7.1 --activate
-          pnpm -v
+      # 3. Instala pnpm manualmente (corrige erro de "pnpm não encontrado")
+      - name: Install pnpm
+        run: npm install -g pnpm@10.7.1
 
-      # 4. Instala dependências com pnpm
+      # 4. Confirma versão instalada (debug opcional)
+      - name: Check pnpm version
+        run: pnpm -v
+
+      # 5. Instala dependências com lockfile travado
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 5. Verifica formatação com Prettier
+      # 6. Valida formatação com Prettier
       - name: Check code formatting (Prettier)
         run: pnpm exec prettier --check .
 
-      # 6. Roda os testes com Jest
-      - name: Run tests (Jest)
-        run: pnpm run test
+      # 7. Roda testes (Jest)
+      - name: Run tests
+        run: pnpm test
 
-      # 7. Build do projeto
+      # 8. Build do projeto
       - name: Build Next.js application
         run: pnpm run build
 
-      # 8. Deploy para a Vercel (apenas em push na main)
+      # 9. Deploy na Vercel apenas no push da main
       - name: Deploy to Vercel
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: amondnet/vercel-action@v25
@@ -53,5 +54,5 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: '--prod'
