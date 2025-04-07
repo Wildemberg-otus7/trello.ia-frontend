@@ -1,44 +1,106 @@
-name: Deploy Frontend
+# Workflow de CI/CD para projeto Next.js (frontend) com pnpm, testes, Prettier e deploy na Vercel.
+# Resolve problemas comuns:
+# - Garante que o pnpm esteja disponível no runner (evita "Unable to locate executable file: pnpm"&#8203;:contentReference[oaicite:0]{index=0}).
+# - Executa Prettier em modo verificação para não travar o build (separando formatação da etapa de build).
+# - Realiza build de produção do Next.js e deploya de forma segura na Vercel via token e IDs do projeto.
+name: CI/CD Pipeline
 
+# Dispara o workflow em push e pull request na branch principal (ajuste as branches conforme sua estratégia).
 on:
   push:
-    branches: [main]
+    branches: [main]      # Executa em push na branch main (pode ser deploy de produção)
+  pull_request:
+    branches: [main]      # Executa em PRs direcionados à main (para rodar testes e checks em PRs)
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1. Faz checkout do código do repositório
+      - name: Checkout repository
         uses: actions/checkout@v3
+        # ✅ Garante que o código do projeto esteja presente para executar testes, build, etc.
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v3
+      # 2. Instala Node.js e configura cache para pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 18        # Usa Node 18 LTS (Next.js 15 requer Node 16+; Node 18 é uma boa escolha)
+          cache: pnpm             # Habilita cache do pnpm (usa pnpm-lock.yaml para cachear dependências)
+        # ✅ Instala a versão especificada do Node e configura cache de dependências para acelerar builds futuros.
+        # O Node 18 inclui o Corepack (ferramenta que gerencia yarn/pnpm) embutido. 
+        # O cache utiliza o pnpm-lock.yaml para restaurar pacotes, reduzindo tempo de instalação.
 
-      - name: Enable Corepack and Setup pnpm
-        run: corepack enable && corepack prepare pnpm@10.7.1 --activate
+      # 3. Instala e habilita o pnpm via Corepack
+      - name: Setup pnpm (via Corepack)
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8    # Especifique a versão major do pnpm usada no projeto (ex: 8 ou 7, conforme packageManager no package.json)
+        # ✅ Garante que o pnpm esteja instalado no runner usando o Corepack. 
+        # Isso alinha a versão do pnpm com a definida no projeto (se "packageManager": "pnpm@x.y.z" estiver no package.json, você pode omitir "version")&#8203;:contentReference[oaicite:1]{index=1}.
+        # Sem essa etapa, o comando pnpm não seria encontrado no PATH, resultando em erro no workflow&#8203;:contentReference[oaicite:2]{index=2}.
+        # O Corepack (disponível no Node 16+) instala automaticamente o gerenciador de pacotes correto. 
+        # Aqui usamos a action oficial do pnpm para simplicidade, mas alternativamente poderíamos rodar "corepack enable" e "corepack prepare pnpm@8.0.0 --activate".
 
+      # 4. Instala as dependências do projeto com pnpm
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
+        # ✅ Instala todas as dependências listadas no package.json usando pnpm.
+        # Usa --frozen-lockfile para garantir que o pnpm-lock.yaml esteja sincronizado com package.json. 
+        # Se houver discrepâncias (ex: alguém esqueceu de commitar o lockfile), o comando falhará, evitando builds não reprodutíveis&#8203;:contentReference[oaicite:3]{index=3}.
+        # Essa prática é similar a usar "npm ci" ou "yarn --frozen-lockfile" em CI, assegurando consistência de versões.
 
-      - name: Check formatting
-        run: pnpm prettier --check .
+      # 5. Verifica formatação do código com Prettier
+      - name: Check code formatting (Prettier)
+        run: pnpm exec prettier --check .
+        # ✅ Executa o Prettier em modo de verificação (sem sobrescrever arquivos) para garantir que o código está formatado corretamente.
+        # Se algum arquivo não estiver no padrão, este passo falha e lista as diferenças, forçando correções antes do merge&#8203;:contentReference[oaicite:4]{index=4}.
+        # Colocamos esta etapa antes do build para que erros de formatação sejam detectados antecipadamente e não bloqueiem o build.
+        # ⚠️ Dica: mantenha um arquivo .prettierignore (incluindo, por ex., a pasta .next/ de build) para o Prettier ignorar arquivos gerados e evitar falsos positivos ou lentidão.
+        # Se esta etapa falhar, desenvolvedores devem rodar `pnpm exec prettier --write .` localmente para auto-formatar o código, commitar e enviar novamente.
 
-      - name: Run tests
-        run: pnpm test
+      # 6. Executa os testes unitários (Jest)
+      - name: Run tests (Jest)
+        run: pnpm run test
+        # ✅ Roda a suíte de testes utilizando Jest (assumindo que "test" está definido no package.json para executar Jest).
+        # Isso garante que nenhuma funcionalidade esteja quebrada. Caso algum teste falhe, o workflow será interrompido aqui.
+        # O GitHub Actions define a variável de ambiente CI=true automaticamente, fazendo o Jest rodar em modo não interativo e evitando comportamento de watch. 
+        # Certifique-se de que configurações de Jest (como jest.config.js) estejam apropriadas para ambiente CI (por exemplo, tratamento de snapshots).
 
-      - name: Build project
-        run: pnpm build
+      # 7. Build de produção do aplicativo Next.js
+      - name: Build Next.js application
+        run: pnpm run build
+        # Se seu build do Next.js precisar de variáveis de ambiente (ex: chaves API para getStaticProps), defina-as abaixo:
+        # env:
+        #   NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
+        # (Certifique-se de adicionar essas secrets no repositório, se necessário. Aqui o projeto roda na porta 3002 em dev, mas isso não afeta o build de produção.)
+        # ✅ Executa o comando de build do Next.js (equivale a "next build"). 
+        # Essa etapa transpila o projeto e gera os artefatos (.next). Qualquer erro de compilação ou tipagem falhará o build, evitando deploys quebrados.
+        # Como estamos fazendo o build na Action, desativamos a etapa de build automática na Vercel (via vercel.json ou configuração web)&#8203;:contentReference[oaicite:5]{index=5}. 
+        # Isso previne builds duplicados e utiliza o resultado gerado aqui.
+        # ⚠️ Certifique-se que as variáveis de ambiente necessárias para o build estejam disponíveis. 
+        # Você pode defini-las como secrets no GitHub e referenciá-las em env:, ou configurá-las no projeto Vercel e usar a CLI da Vercel para obtê-las, se aplicável.
 
+      # 8. Deploy automático na Vercel 
       - name: Deploy to Vercel
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: amondnet/vercel-action@v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prod'
-          working-directory: ./
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}       # Token de autenticação na Vercel (secreto)
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}     # ID da organização (time) na Vercel
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # ID do projeto na Vercel
+          vercel-args: '--prod'                           # Implanta como produção (usar --prod garante deploy na URL final do projeto)
+          github-token: ${{ secrets.GITHUB_TOKEN }}       # Token do GitHub (padrão), permite comentar em PRs ou atualizar status
+        # ✅ Usa a Action amondnet/vercel-action para fazer deploy na Vercel usando a CLI do Vercel por baixo dos panos.
+        # Somente executamos deploy em pushes na main (condição acima), evitando deploy em PRs. Você pode ajustar ou remover o if conforme sua estratégia (por ex., deploy preview em PRs sem --prod).
+        # **Autenticação**: utiliza um token da Vercel (VERCEL_TOKEN) para login. Obtenha esse token em sua conta Vercel (Profile > Tokens) e adicione como Secret no GitHub&#8203;:contentReference[oaicite:6]{index=6}.
+        # **Identificação do Projeto**: usa vercel-org-id e vercel-project-id para indicar em qual projeto realizar o deploy. 
+        # Esses IDs podem ser obtidos através do comando `vercel link` executado localmente no projeto – isso cria um arquivo .vercel com orgId e projectId&#8203;:contentReference[oaicite:7]{index=7}. 
+        # Salve esses valores como secrets (ex: ORG_ID e PROJECT_ID) no repositório para uso aqui&#8203;:contentReference[oaicite:8]{index=8}.
+        # Com token e IDs corretos, a Action implanta os artefatos já construídos para o projeto correspondente na sua conta Vercel.
+        # **Erros comuns**: 
+        #  - Se o token ou IDs estiverem incorretos ou faltando, o deploy falhará por falta de autorização. Verifique se os secrets no GitHub correspondem exatamente aos IDs do projeto e se o token tem permissão. 
+        #    (Exemplo: um erro "HttpError: Not Found" pode indicar ID errado ou token sem acesso ao projeto)&#8203;:contentReference[oaicite:9]{index=9}.
+        #  - Caso a integração Vercel GitHub esteja habilitada, pode haver conflitos de dois deploys. Recomenda-se desativar a integração nativa do Vercel (`github.enabled: false` no vercel.json) para usar somente este fluxo de CI&#8203;:contentReference[oaicite:10]{index=10}.
+        # Após o deploy, a Action fornece a URL (preview ou produção) implantada nos outputs, e opcionalmente pode comentar no PR com o link (configurável via github-comment).
