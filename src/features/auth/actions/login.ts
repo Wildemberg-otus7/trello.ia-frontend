@@ -12,6 +12,7 @@ export const loginAction = async (
 ): Promise<LoginState> => {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  console.log(prevState, email, password);
 
   await new Promise((res) => setTimeout(res, 500));
 

@@ -42,6 +42,7 @@ export function LoginForm() {
   });
 
   const onSubmit = (data: LoginFormData) => {
+    console.log(data);
     // Integrado ao formAction
   };
 
