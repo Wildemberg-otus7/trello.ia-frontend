@@ -1,6 +1,6 @@
 // Caminho: src/features/auth/actions/login.ts
 
-'use server'
+'use server';
 
 export type LoginState =
   | { error: string; success?: undefined }
@@ -8,7 +8,7 @@ export type LoginState =
 
 export const loginAction = async (
   prevState: LoginState,
-  formData: FormData
+  formData: FormData,
 ): Promise<LoginState> => {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;

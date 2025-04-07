@@ -48,7 +48,7 @@ services:
     container_name: trelloia-frontend
     restart: unless-stopped
     ports:
-      - "3002:3002"
+      - '3002:3002'
     env_file:
       - .env.local
 ```
