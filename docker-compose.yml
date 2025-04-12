@@ -9,6 +9,7 @@ services:
       - .env.local
     volumes:
       - .:/app
+      - /app/.next
     working_dir: /app
     command: pnpm run dev
     restart: unless-stopped

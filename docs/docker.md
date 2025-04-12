@@ -6,67 +6,74 @@ Este guia cobre como utilizar o Docker para rodar, testar e construir o projeto 
 
 ## 🐳 Dockerfile
 
-A imagem é baseada no **Node 20 Alpine** com `pnpm` como gerenciador de pacotes. Ela é configurada para executar o projeto em ambiente de produção.
+A imagem é baseada em **Node 20 Alpine**, com `pnpm` como gerenciador de pacotes. Está preparada para **build e produção**, com suporte também ao desenvolvimento.
 
 ### Principais instruções:
 
-- Instala dependências via `pnpm install`
-- Copia os arquivos necessários
-- Realiza `pnpm build`
+- Instala as dependências com `pnpm install`
+- Copia o código da aplicação
+- Executa `pnpm build`
 - Expõe a porta `3002`
 
 ---
 
-## 🛠 docker-compose.yml
+## 💠 docker-compose.yml
+
+### Estrutura recomendada:
 
 ```yaml
-version: '3.8'
-
 services:
   frontend:
+    container_name: trelloia-frontend
     build:
       context: .
-    container_name: trelloia-frontend
-    restart: unless-stopped
     ports:
       - '3002:3002'
     env_file:
       - .env.local
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: pnpm run dev
+    restart: unless-stopped
 ```
 
-> ⚠️ Certifique-se de que o arquivo `.env.local` esteja presente na raiz do projeto antes de subir o container.
+> ⚠️ Certifique-se de que o arquivo `.env.local` esteja presente na raiz do projeto.
 
 ---
 
-## ▶️ Comandos úteis
+## 🚀 Modos de Execução
 
-### 📌 Subir o projeto
+Você pode optar por:
+
+### ✅ Execução automática (recomendada)
+
+Com `command: pnpm run dev`, o projeto inicia automaticamente ao subir:
 
 ```bash
 docker-compose up -d
 ```
 
-### 🔄 Subir com rebuild (após mudanças importantes)
+### 🛠 Execução manual (mais controle)
+
+Se remover a linha `command`, poderá executar manualmente:
 
 ```bash
-docker-compose up -d --build
-```
-
-### 🛑 Parar o container
-
-```bash
-docker-compose down
+docker-compose up -d
+docker-compose exec frontend pnpm dev -- --port 3003
 ```
 
 ---
 
-## 📂 Acessar o container
+## 📂 Acesso e logs
+
+### Acessar terminal do container:
 
 ```bash
 docker exec -it trelloia-frontend sh
 ```
 
-### Ver logs em tempo real
+### Ver logs em tempo real:
 
 ```bash
 docker logs -f trelloia-frontend
@@ -74,9 +81,9 @@ docker logs -f trelloia-frontend
 
 ---
 
-## ⚙️ Rodar scripts dentro do container
+## 📦 Scripts via Docker
 
-Você pode executar qualquer script disponível no `package.json` com:
+Rode qualquer comando `pnpm` do `package.json`:
 
 ```bash
 docker-compose exec frontend pnpm <script>
@@ -85,43 +92,51 @@ docker-compose exec frontend pnpm <script>
 ### Exemplos:
 
 ```bash
-docker-compose exec frontend pnpm dev       # Inicia em modo desenvolvimento
-
-docker-compose exec frontend pnpm build     # Gera build de produção
-
-docker-compose exec frontend pnpm start     # Inicia a build em modo produção
-
-docker-compose exec frontend pnpm test      # Executa testes unitários
-
-docker-compose exec frontend pnpm lint      # Roda o ESLint
-
-docker-compose exec frontend pnpm format    # Faz a formatação automática do projeto
+docker-compose exec frontend pnpm dev       # Inicia o dev server (só use se remover o command: pnpm run dev do docker-compose.yml)
+docker-compose exec frontend pnpm build     # Cria a build de produção
+docker-compose exec frontend pnpm start     # Inicia a build gerada
+docker-compose exec frontend pnpm test      # Executa os testes
+docker-compose exec frontend pnpm lint      # Executa o linter
+docker-compose exec frontend pnpm format    # Formata o código
 ```
 
 ---
 
-## 🔁 Outras dicas úteis
+## 🔁 Comandos úteis
 
-| Ação                           | Comando                    |
-| ------------------------------ | -------------------------- |
-| Ver containers em execução     | `docker ps`                |
-| Ver imagens locais             | `docker images`            |
-| Remover containers parados     | `docker container prune`   |
-| Remover imagens não utilizadas | `docker image prune -a`    |
-| Alterar porta (ex: 3003)       | Edite `docker-compose.yml` |
+| Ação                           | Comando                                 |
+| ------------------------------ | --------------------------------------- |
+| Subir o projeto                | `docker-compose up -d`                  |
+| Subir com rebuild              | `docker-compose up -d --build`          |
+| Parar o projeto                | `docker-compose down`                   |
+| Ver containers em execução     | `docker ps`                             |
+| Ver imagens locais             | `docker images`                         |
+| Limpar containers parados      | `docker container prune`                |
+| Remover imagens não utilizadas | `docker image prune -a`                 |
+| Alterar porta (ex: para 3003)  | Edite o `docker-compose.yml` e reinicie |
 
 ---
 
-## 🧪 Desenvolvimento e Hot Reload
+## 🧪 Hot Reload (desenvolvimento)
 
-Durante o desenvolvimento, o ideal é montar um volume entre sua máquina e o container para permitir hot reload:
+Para garantir atualização ao salvar arquivos, use um volume:
 
 ```yaml
 volumes:
   - .:/app
 ```
 
-> Exemplo completo dessa config pode ser documentado futuramente no `docker-compose.override.yml`
+> 💡 Você também pode criar um `docker-compose.override.yml` para manter essa config isolada do ambiente de produção.
+
+---
+
+## ✅ Checklist Docker
+
+- [x] `Dockerfile` funcional com build otimizado
+- [x] `docker-compose.yml` com `.env.local`
+- [x] Hot reload funcionando com volumes
+- [x] Scripts rodando via `pnpm`
+- [x] Suporte a CI/CD e deploy Vercel
 
 ---
 
