@@ -1,28 +1,22 @@
-// Caminho: src/features/auth/actions/login.ts
+import { FormState } from "@/types/formStates";
+import { LoginFormData } from "../validation/login.schema";
 
-'use server';
-
-export type LoginState =
-  | { error: string; success?: undefined }
-  | { success: boolean; error?: undefined };
-
-export const loginAction = async (
-  prevState: LoginState,
-  formData: FormData,
-): Promise<LoginState> => {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  console.log(prevState, email, password);
-
-  await new Promise((res) => setTimeout(res, 500));
-
-  if (email === 'teste@exemplo.com' && password !== 'senha123') {
-    return { error: 'Credenciais inválidas' };
-  }
-
-  if (email && password) {
-    return { success: true };
-  }
-
-  return { error: 'Erro ao fazer login' };
-};
+  export const loginAction = async (
+    _prev: FormState,
+    data: LoginFormData
+  ): Promise<FormState> => {
+    const { email, password } = data;
+  
+    await new Promise((res) => setTimeout(res, 500));
+  
+    if (email === 'teste@exemplo.com' && password !== 'senha123') {
+      return { error: 'Credenciais inválidas' };
+    }
+  
+    if (email && password) {
+      return { success: true };
+    }
+  
+    return { error: 'Erro ao fazer login' };
+  };
+  
