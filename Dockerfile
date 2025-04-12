@@ -19,6 +19,9 @@ RUN pnpm install --frozen-lockfile
 # Copia o restante do projeto
 COPY . .
 
+# Desativa tentativa de baixar fontes no build
+ENV NEXT_FONT_GOOGLE_FETCH_DISABLE=1
+
 # Build da aplicação Next.js
 RUN pnpm build
 
