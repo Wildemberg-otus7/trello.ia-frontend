@@ -20,7 +20,7 @@ Interface web do projeto **Trello.ia**, um sistema de organização de tarefas i
 
 ---
 
-## 📅 Scripts Disponíveis
+## 📅 Scripts Disponíveis (via terminal local)
 
 ```bash
 pnpm dev       # Roda localmente na porta 3002
@@ -30,124 +30,77 @@ pnpm test      # Executa os testes unitários com cobertura
 pnpm lint      # Roda o ESLint
 ```
 
----
-
-## 📅 Comandos extras para resolver problemas
-
-Caso ocorra erro de permissão no `.next`:
-
-```bash
-sudo chown -R $USER:$USER .next
-rm -rf .next
-pnpm run build
-```
+> 💡 Também é possível rodar esses scripts via Docker (Recomendo fortemente que faça isso, para ter localmente um comportamento mais próximo do que é em produção). Veja detalhes em [docs/docker.md](./docs/docker.md).
 
 ---
 
-## 💪 Docker
-
-### Dockerfile
-
-- Baseado em **Node 20 Alpine**
-- Usa **pnpm** como gerenciador
-
-### docker-compose.yml
-
-```yaml
-version: '3.8'
-
-services:
-  frontend:
-    build:
-      context: .
-    container_name: trelloia-frontend
-    restart: unless-stopped
-    ports:
-      - '3002:3002'
-    env_file:
-      - .env.local
-```
-
-### Comandos Docker úteis
-
-| Ação                     | Comando                                                  |
-| ------------------------ | -------------------------------------------------------- |
-| Subir imagem             | `docker-compose up -d`                                   |
-| Subir imagem com rebuild | `docker-compose up -d --build`                           |
-| Parar containers         | `docker-compose down`                                    |
-| Ver logs                 | `docker logs -f trelloia-frontend`                       |
-| Acessar container        | `docker exec -it trelloia-frontend sh`                   |
-| Ver containers ativos    | `docker ps`                                              |
-| Ver imagens locais       | `docker images`                                          |
-| Remover container parado | `docker container prune`                                 |
-| Mudar porta (ex: 3003)   | Edite `docker-compose.yml` e rode `docker-compose up -d` |
-
----
-
-## 📁 Estrutura de Pastas
+## 📁 Estrutura de Pastas (resumo)
 
 ```bash
 src/
-├── app/             # Rotas e páginas do Next.js (App Router)
-│   ├── login/       # Página de login
-│   └── signUp/      # Página de cadastro
-├── components/      # Componentes reutilizáveis (botões, inputs, etc)
-│   └── ui/          # Design System baseado no ShadCN
-├── constants/       # Constantes globais (mensagens, estados, rotas)
-├── features/        # Lógica de estado por domínio (ex: auth, boards)
-│   ├── auth/        # Telas, validações e actions de autenticação
-│   └── boards/      # Redux slice para boards
-├── hooks/           # Hooks customizados (ex: useToggle)
-├── lib/             # Funções auxiliares genéricas
-├── services/        # Integração com APIs e backends
-├── store/           # Configuração do Redux (store, middleware, etc)
-├── types/           # Tipagens globais do projeto
+├── app/             # Páginas do Next.js (App Router)
+├── components/      # Componentes reutilizáveis
+├── constants/       # Constantes globais
+├── features/        # Domínios/Components com regras de negócio como auth, boards...
+├── hooks/           # Hooks customizados
+├── lib/             # Funções auxiliares
+├── services/        # Requisições HTTP/API
+├── store/           # Redux store (configuração)
+├── types/           # Tipagens globais
 ```
 
 ---
 
 ## ✅ Funcionalidades já implementadas
 
-- Cadastro e login validados com React Hook Form + Yup
-- Validações com mensagens acessíveis (ARIA)
-- Testes unitários com cobertura de login, signup e slice do Redux
-- Build e lint configurados
-- CI/CD com GitHub Actions
+- Cadastro e login com validação e feedback acessível
+- Testes unitários com cobertura de tela e slice Redux
+- Lint, build e CI/CD configurados
 - Deploy gratuito via Vercel
-- Docker e docker-compose funcional para desenvolvimento
+- Docker funcional
 
 ---
 
-## 🔁 Em desenvolvimento (roadmap próximo)
+## 🔁 Em desenvolvimento
 
-- Integração real com backend NestJS + PostgreSQL
-- Armazenamento global do usuário (Zustand + localStorage)
+- Integração com backend (NestJS + PostgreSQL)
 - Criação de boards, listas e cards
-- Funções de IA: sugestão de tarefas, aprendizado de rotinas
-- Tela de dashboard e perfil
-- Proteção de rotas (middleware + cookie/token)
+- Armazenamento global com Zustand
+- Features com IA embarcada
+- Proteção de rotas e dashboard
 
 ---
 
 ## 🧠 Objetivo
 
-O Trello.ia tem como objetivo se tornar uma ferramenta moderna de gestão de tarefas com assistência de IA:
+Criar uma ferramenta moderna de gestão de tarefas com assistência de IA:
 
 - Automatização de rotinas
 - Sugestão de tarefas com base em comportamento
-- Auxílio a foco e produtividade
+- Auxílio à produtividade
 
 ---
 
 ## 🛠️ Contribuições
 
-Este projeto é open source e está aberto para contribuições a partir da finalização do MVP.
+Este projeto é open source e está aberto para contribuições após finalização do MVP.
 
 Para contribuir:
 
-1. Faça um fork do repositório
-2. Crie uma branch com a feature ou correção
-3. Envie um Pull Request explicando sua alteração
+1. Fork o repositório
+2. Crie uma branch descritiva
+3. Envie um Pull Request com descrição clara
+
+---
+
+## 📒 Documentação complementar
+
+- [Docker](./docs/docker.md)
+- [Estrutura de Pastas](./docs/structure.md)
+- [Ambiente](./docs/environment.md)
+- [Testes](./docs/testing.md)
+- [Roadmap](./docs/roadmap.md)
+- [Features de IA](./docs/ai-features.md)
 
 ---
 
@@ -158,5 +111,4 @@ Licença será definida após a publicação oficial.
 ---
 
 Desenvolvido com ❤️ por **Wildemberg de Jesus Oliveira**  
-Perfil: [LinkedIn](https://www.linkedin.com/in/wildemberg-de-jesus-oliveira/)  
-Cargo: Desenvolvedor Fullstack Pleno
+[LinkedIn](https://www.linkedin.com/in/wildemberg-de-jesus-oliveira/) – Desenvolvedor Fullstack Pleno
