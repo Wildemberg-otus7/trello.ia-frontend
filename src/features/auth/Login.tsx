@@ -1,10 +1,7 @@
-// Caminho: src/features/auth/LoginForm.tsx
-
 'use client';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
@@ -49,6 +46,14 @@ export function LoginForm() {
       {state.error && (
         <Alert variant="destructive">
           <AlertDescription>{state.error}</AlertDescription>
+        </Alert>
+      )}
+
+      {state.success && (
+        <Alert className="bg-green-50 border-green-200">
+          <AlertDescription className="text-green-800">
+            Login realizado com sucesso!
+          </AlertDescription>
         </Alert>
       )}
 

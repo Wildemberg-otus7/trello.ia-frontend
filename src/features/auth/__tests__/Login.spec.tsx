@@ -1,6 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { LoginForm } from '../Login';
+import LoginForm from '../Login';
+
+jest.mock('../actions/login', () => ({
+  loginAction: jest.fn((_prev, data) => {
+    if (data.email === 'teste@exemplo.com' && data.password !== 'senha123') {
+      return Promise.resolve({ error: 'Credenciais inválidas' });
+    }
+    return Promise.resolve({ success: true });
+  }),
+}));
 
 describe('LoginForm', () => {
   it('renderiza os campos corretamente', () => {
@@ -8,17 +17,13 @@ describe('LoginForm', () => {
 
     expect(screen.getByLabelText(/e-mail/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/senha/i)).toBeInTheDocument();
-
-    // Corrigido: garantir que só ache o botão com texto exato "Entrar"
     expect(screen.getByRole('button', { name: /^entrar$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /entrar com google/i })).toBeInTheDocument();
   });
 
   it('exibe mensagens de erro para campos vazios após submit', async () => {
     render(<LoginForm />);
-    const submitButton = screen.getByRole('button', { name: /^entrar$/i });
-
-    await userEvent.click(submitButton);
+    await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
 
     expect(await screen.findByText(/e-mail é obrigatório/i)).toBeInTheDocument();
     expect(await screen.findByText(/senha é obrigatória/i)).toBeInTheDocument();
@@ -26,14 +31,31 @@ describe('LoginForm', () => {
 
   it('valida formato de e-mail', async () => {
     render(<LoginForm />);
-    const emailInput = screen.getByLabelText(/e-mail/i);
-    const passwordInput = screen.getByLabelText(/senha/i);
-    const submitButton = screen.getByRole('button', { name: /^entrar$/i });
 
-    await userEvent.type(emailInput, 'emailinvalido');
-    await userEvent.type(passwordInput, '123456');
-    await userEvent.click(submitButton);
+    await userEvent.type(screen.getByLabelText(/e-mail/i), 'emailinvalido');
+    await userEvent.type(screen.getByLabelText(/senha/i), '123456');
+    await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
 
     expect(await screen.findByText(/digite um e-mail válido/i)).toBeInTheDocument();
+  });
+
+  it('exibe erro para credenciais inválidas', async () => {
+    render(<LoginForm />);
+
+    await userEvent.type(screen.getByLabelText(/e-mail/i), 'teste@exemplo.com');
+    await userEvent.type(screen.getByLabelText(/senha/i), 'errado');
+    await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
+
+    expect(await screen.findByText(/credenciais inválidas/i)).toBeInTheDocument();
+  });
+
+  it('exibe mensagem de sucesso no login válido', async () => {
+    render(<LoginForm />);
+
+    await userEvent.type(screen.getByLabelText(/e-mail/i), 'will@email.com');
+    await userEvent.type(screen.getByLabelText(/senha/i), '123456');
+    await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
+
+    expect(await screen.findByText(/login realizado com sucesso/i)).toBeInTheDocument();
   });
 });
