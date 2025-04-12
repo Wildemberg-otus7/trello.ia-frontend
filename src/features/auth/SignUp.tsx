@@ -14,9 +14,15 @@ import { signupAction } from "./actions/signUp"
 import { type SignupFormData, signupSchema } from "./validation/signUp.schema"
 import { defaultFormState } from "@/constants/formStates"
 import type { FormState } from "@/types/formStates"
+import { Eye, EyeOff } from 'lucide-react';
+import { useToggle } from '@/hooks/useToggle';
+
 
 export function SignupForm() {
-  const [state, signupFormAction, isPending] = useActionState<FormState, SignupFormData>(signupAction, defaultFormState)
+  const [state, signupFormAction, isPending] = useActionState(signupAction, defaultFormState);
+  
+  const [showPassword, togglePassword] = useToggle(false);
+  const [showConfirm, toggleConfirm] = useToggle(false);
 
   const {
     register,
@@ -106,12 +112,16 @@ export function SignupForm() {
             <Lock className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
             <Input
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               {...register("password")}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
-              className="h-11 pl-10"
+              className="h-11 pl-10 pr-10"
+            />
+            <EyeOff
+              className="absolute right-3 top-3.5 h-5 w-5 cursor-pointer text-muted-foreground"
+              onClick={togglePassword}
             />
           </div>
           {errors.password && (
@@ -127,12 +137,16 @@ export function SignupForm() {
             <Lock className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
             <Input
               id="confirmPassword"
-              type="password"
+              type={showConfirm ? 'text' : 'password'}
               placeholder="••••••••"
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}
               aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
-              className="h-11 pl-10"
+              className="h-11 pl-10 pr-10"
+            />
+            <Eye
+              className="absolute right-3 top-3.5 h-5 w-5 cursor-pointer text-muted-foreground"
+              onClick={toggleConfirm}
             />
           </div>
           {errors.confirmPassword && (

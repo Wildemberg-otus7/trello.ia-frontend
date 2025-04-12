@@ -2,19 +2,26 @@ import { FormState } from '@/types/formStates';
 import { SignupFormData } from '../validation/signUp.schema';
 
 export const signupAction = async (
-  signState: FormState,
-  formData: SignupFormData,
+  _prevState: FormState, // ← ignora usando _
+  formData: SignupFormData
 ): Promise<FormState> => {
-  const { name, email, password } = formData;
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log(signState, name, email, password);
+    if (!response.ok) {
+      const { message } = await response.json();
+      return { error: message || 'Erro ao cadastrar usuário' };
+    }
 
-  if (email === 'existente@exemplo.com') {
-    return { error: 'Este e-mail já está cadastrado' };
+    return {
+      success: true,
+    };
+  } catch (err) {
+    return { error: 'Erro inesperado ao conectar ao servidor' };
   }
-
-  return { error: 'Ocorreu um erro inesperado' };
 };
 
-//   redirect('/auth/login') // Interrompe execução aqui
