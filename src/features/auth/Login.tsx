@@ -13,18 +13,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { loginAction } from './actions/login';
-import { startTransition } from "react"
+import { startTransition } from 'react';
 import { LoginFormData, loginSchema } from './validation/login.schema';
 import { FormState } from '@/types/formStates';
 import { defaultFormState } from '@/constants/formStates';
 
-
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState<FormState, LoginFormData>(
     loginAction,
-    defaultFormState
+    defaultFormState,
   );
-  
+
   const {
     register,
     handleSubmit,
@@ -34,12 +33,11 @@ export function LoginForm() {
     mode: 'onBlur',
   });
 
-
   const onSubmit = (data: LoginFormData) => {
     startTransition(() => {
-      formAction(data)
-    })
-  }
+      formAction(data);
+    });
+  };
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6 p-6 bg-white rounded-lg shadow-md">
@@ -61,9 +59,9 @@ export function LoginForm() {
             id="email"
             type="email"
             placeholder="seu@email.com"
-            {...register("email")}
+            {...register('email')}
             aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? "email-error" : undefined}
+            aria-describedby={errors.email ? 'email-error' : undefined}
           />
           {errors.email && (
             <p id="email-error" className="text-sm text-red-500">
@@ -82,9 +80,9 @@ export function LoginForm() {
           <Input
             id="password"
             type="password"
-            {...register("password")}
+            {...register('password')}
             aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? "password-error" : undefined}
+            aria-describedby={errors.password ? 'password-error' : undefined}
           />
           {errors.password && (
             <p id="password-error" className="text-sm text-red-500">
@@ -94,11 +92,11 @@ export function LoginForm() {
         </div>
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "Entrando..." : "Entrar"}
+          {isPending ? 'Entrando...' : 'Entrar'}
         </Button>
 
         <div className="text-center text-sm">
-          Não tem uma conta?{" "}
+          Não tem uma conta?{' '}
           <Link href="/signUp" className="text-sky-600 hover:underline">
             Cadastre-se
           </Link>
@@ -119,14 +117,14 @@ export function LoginForm() {
           className="w-full"
           onClick={() => {
             // Implementação futura de login com Google
-            console.log("Login com Google")
+            console.log('Login com Google');
           }}
         >
           Entrar com Google
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
 export default LoginForm;
