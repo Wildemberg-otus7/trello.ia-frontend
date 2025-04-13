@@ -1,15 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../Login';
+import { LoginFormData } from '../validation/login.schema';
+import { FormState } from '@/types/formStates';
 
 // Mock do router para evitar erro com useRouter()
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn() }),
 }));
 
-// Mock da action
+// Mock da action com tipos explícitos
 jest.mock('../actions/login', () => ({
-  loginAction: jest.fn((_prev: any, data: any) => {
+  loginAction: jest.fn((_prev: FormState, data: LoginFormData) => {
     if (data.email === 'teste@exemplo.com' && data.password !== 'senha123') {
       return Promise.resolve({ error: 'Credenciais inválidas' });
     }

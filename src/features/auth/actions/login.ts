@@ -3,8 +3,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { LoginFormData } from '../validation/login.schema';
+import { FormState } from '@/types/formStates';
 
-export const loginAction = async (_: any, data: LoginFormData) => {
+export const loginAction = async (_: FormState, data: LoginFormData) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

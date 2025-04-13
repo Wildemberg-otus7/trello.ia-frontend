@@ -14,12 +14,9 @@ import { loginAction } from './actions/login';
 import { type LoginFormData, loginSchema } from './validation/login.schema';
 import type { FormState } from '@/types/formStates';
 import { defaultFormState } from '@/constants/formStates';
-import { useRouter } from 'next/navigation';
 import { startTransition } from 'react';
 
 export function LoginForm() {
-  const router = useRouter();
-
   const [state, formAction, isPending] = useActionState<FormState, LoginFormData>(
     loginAction,
     defaultFormState,
