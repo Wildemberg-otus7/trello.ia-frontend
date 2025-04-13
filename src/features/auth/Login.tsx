@@ -11,12 +11,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { loginAction } from './actions/login';
-import { startTransition } from 'react';
 import { type LoginFormData, loginSchema } from './validation/login.schema';
 import type { FormState } from '@/types/formStates';
 import { defaultFormState } from '@/constants/formStates';
+import { useRouter } from 'next/navigation';
+import { startTransition } from 'react';
 
 export function LoginForm() {
+  const router = useRouter();
+
   const [state, formAction, isPending] = useActionState<FormState, LoginFormData>(
     loginAction,
     defaultFormState,

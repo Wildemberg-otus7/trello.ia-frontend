@@ -3,7 +3,7 @@ import { SignupFormData } from '../validation/signUp.schema';
 
 export const signupAction = async (
   _prevState: FormState, // ← ignora usando _
-  formData: SignupFormData
+  formData: SignupFormData,
 ): Promise<FormState> => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
@@ -21,7 +21,7 @@ export const signupAction = async (
       success: true,
     };
   } catch (err) {
+    console.error(err);
     return { error: 'Erro inesperado ao conectar ao servidor' };
   }
 };
-

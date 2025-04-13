@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   frontend:
     container_name: trelloia-frontend
@@ -13,3 +15,9 @@ services:
     working_dir: /app
     command: pnpm run dev
     restart: unless-stopped
+    networks:
+      - trelloia-shared
+
+networks:
+  trelloia-shared:
+    external: true

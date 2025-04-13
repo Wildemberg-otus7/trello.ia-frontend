@@ -1,18 +1,36 @@
-import { FormState } from '@/types/formStates';
+'use server';
+
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { LoginFormData } from '../validation/login.schema';
 
-export const loginAction = async (_prev: FormState, data: LoginFormData): Promise<FormState> => {
-  const { email, password } = data;
+export const loginAction = async (_: any, data: LoginFormData) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
 
-  await new Promise((res) => setTimeout(res, 500));
+  const res = await response.json();
 
-  if (email === 'teste@exemplo.com' && password !== 'senha123') {
-    return { error: 'Credenciais inválidas' };
+  if (!response.ok) {
+    return { error: res.message || 'Credenciais inválidas' };
   }
 
-  if (email && password) {
-    return { success: true };
+  const rawCookie = response.headers.get('set-cookie');
+  const tokenMatch = rawCookie?.match(/auth_token=([^;]+)/);
+
+  if (tokenMatch) {
+    (await cookies()).set('auth_token', tokenMatch[1], {
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24,
+    });
   }
 
-  return { error: 'Erro ao fazer login' };
+  // ✅ Redirecionamento server-side
+  redirect('/dashboard');
 };

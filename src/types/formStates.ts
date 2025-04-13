@@ -3,5 +3,5 @@ export type FormState =
   | { success: boolean; error?: undefined };
 
 export const defaultFormState: FormState = {
-  success: false
+  success: false,
 };

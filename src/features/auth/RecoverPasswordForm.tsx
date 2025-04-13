@@ -1,25 +1,28 @@
-"use client"
+'use client';
 
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { startTransition, useActionState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import Link from "next/link"
-import { ArrowRight, Mail } from "lucide-react"
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { startTransition, useActionState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
+import { ArrowRight, Mail } from 'lucide-react';
 
-import { defaultFormState } from "@/constants/formStates"
-import type { FormState } from "@/types/formStates"
-import { recoverPasswordAction } from "./actions/recoverPassword"
-import { type RecoverPasswordFormData, recoverPasswordSchema } from "./validation/recoverPassword.schema"
+import { defaultFormState } from '@/constants/formStates';
+import type { FormState } from '@/types/formStates';
+import { recoverPasswordAction } from './actions/recoverPassword';
+import {
+  type RecoverPasswordFormData,
+  recoverPasswordSchema,
+} from './validation/recoverPassword.schema';
 
 export function RecoverPasswordForm() {
   const [state, recoverAction, isPending] = useActionState<FormState, RecoverPasswordFormData>(
     recoverPasswordAction,
     defaultFormState,
-  )
+  );
 
   const {
     register,
@@ -27,20 +30,22 @@ export function RecoverPasswordForm() {
     formState: { errors },
   } = useForm<RecoverPasswordFormData>({
     resolver: yupResolver(recoverPasswordSchema),
-    mode: "onBlur",
-  })
+    mode: 'onBlur',
+  });
 
   const onSubmit = (data: RecoverPasswordFormData) => {
     startTransition(() => {
-      recoverAction(data)
-    })
-  }
+      recoverAction(data);
+    });
+  };
 
   return (
     <div className="w-full space-y-6">
       <div className="space-y-2">
         <h1 className="text-2xl font-bold tracking-tight">Recuperar senha</h1>
-        <p className="text-muted-foreground">Informe seu e-mail para receber instruções de recuperação</p>
+        <p className="text-muted-foreground">
+          Informe seu e-mail para receber instruções de recuperação
+        </p>
       </div>
 
       {state.error && (
@@ -66,9 +71,9 @@ export function RecoverPasswordForm() {
               id="email"
               type="email"
               placeholder="seu@email.com"
-              {...register("email")}
+              {...register('email')}
               aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? "email-error" : undefined}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               className="h-11 pl-10"
             />
           </div>
@@ -80,17 +85,17 @@ export function RecoverPasswordForm() {
         </div>
 
         <Button type="submit" className="w-full h-11" disabled={isPending}>
-          {isPending ? "Enviando..." : "Enviar instruções"}
+          {isPending ? 'Enviando...' : 'Enviar instruções'}
           {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
         </Button>
 
         <div className="text-center text-sm">
-          Lembrou sua senha?{" "}
+          Lembrou sua senha?{' '}
           <Link href="/login" className="text-sky-600 font-medium hover:underline">
             Voltar ao login
           </Link>
         </div>
       </form>
     </div>
-  )
+  );
 }

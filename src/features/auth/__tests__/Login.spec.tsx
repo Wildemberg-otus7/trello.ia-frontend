@@ -2,8 +2,14 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../Login';
 
+// Mock do router para evitar erro com useRouter()
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
+
+// Mock da action
 jest.mock('../actions/login', () => ({
-  loginAction: jest.fn((_prev, data) => {
+  loginAction: jest.fn((_prev: any, data: any) => {
     if (data.email === 'teste@exemplo.com' && data.password !== 'senha123') {
       return Promise.resolve({ error: 'Credenciais inválidas' });
     }
@@ -21,7 +27,7 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: /entrar com google/i })).toBeInTheDocument();
   });
 
-  it('exibe mensagens de erro para campos vazios após submit', async () => {
+  it('exibe mensagens de erro para campos vazios', async () => {
     render(<LoginForm />);
     await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
 
@@ -29,9 +35,8 @@ describe('LoginForm', () => {
     expect(await screen.findByText(/senha é obrigatória/i)).toBeInTheDocument();
   });
 
-  it('valida formato de e-mail', async () => {
+  it('valida formato de e-mail inválido', async () => {
     render(<LoginForm />);
-
     await userEvent.type(screen.getByLabelText(/e-mail/i), 'emailinvalido');
     await userEvent.type(screen.getByLabelText(/senha/i), '123456');
     await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
@@ -41,9 +46,8 @@ describe('LoginForm', () => {
 
   it('exibe erro para credenciais inválidas', async () => {
     render(<LoginForm />);
-
     await userEvent.type(screen.getByLabelText(/e-mail/i), 'teste@exemplo.com');
-    await userEvent.type(screen.getByLabelText(/senha/i), 'errado');
+    await userEvent.type(screen.getByLabelText(/senha/i), 'errada');
     await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
 
     expect(await screen.findByText(/credenciais inválidas/i)).toBeInTheDocument();
@@ -51,9 +55,8 @@ describe('LoginForm', () => {
 
   it('exibe mensagem de sucesso no login válido', async () => {
     render(<LoginForm />);
-
     await userEvent.type(screen.getByLabelText(/e-mail/i), 'will@email.com');
-    await userEvent.type(screen.getByLabelText(/senha/i), '123456');
+    await userEvent.type(screen.getByLabelText(/senha/i), 'senha123');
     await userEvent.click(screen.getByRole('button', { name: /^entrar$/i }));
 
     expect(await screen.findByText(/login realizado com sucesso/i)).toBeInTheDocument();
