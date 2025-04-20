@@ -6,6 +6,7 @@ import { LoginFormData } from '../validation/login.schema';
 import { FormState } from '@/types/formStates';
 
 export const loginAction = async (_: FormState, data: LoginFormData) => {
+  console.log('data: ', data, process.env.NEXT_PUBLIC_API_URL);
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
