@@ -23,7 +23,7 @@ Interface web do projeto **Trello.ia**, um sistema de organização de tarefas i
 ## 📅 Scripts Disponíveis (via terminal local)
 
 ```bash
-pnpm dev       # Roda localmente na porta 3002
+pnpm dev       # Roda localmente na porta 3030
 pnpm build     # Gera a build de produção
 pnpm start     # Roda em modo produção com a build feita
 pnpm test      # Executa os testes unitários com cobertura

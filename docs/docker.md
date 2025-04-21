@@ -13,7 +13,7 @@ A imagem é baseada em **Node 20 Alpine**, com `pnpm` como gerenciador de pacote
 - Instala as dependências com `pnpm install`
 - Copia o código da aplicação
 - Executa `pnpm build`
-- Expõe a porta `3002`
+- Expõe a porta `3030`
 
 ---
 
@@ -28,7 +28,7 @@ services:
     build:
       context: .
     ports:
-      - '3002:3002'
+      - '3030:3030'
     env_file:
       - .env.local
     volumes:
@@ -60,7 +60,7 @@ Se remover a linha `command`, poderá executar manualmente:
 
 ```bash
 docker-compose up -d
-docker-compose exec frontend pnpm dev -- --port 3003
+docker-compose exec frontend pnpm dev -- --port 3030
 ```
 
 ---
@@ -113,7 +113,7 @@ docker-compose exec frontend pnpm format    # Formata o código
 | Ver imagens locais             | `docker images`                         |
 | Limpar containers parados      | `docker container prune`                |
 | Remover imagens não utilizadas | `docker image prune -a`                 |
-| Alterar porta (ex: para 3003)  | Edite o `docker-compose.yml` e reinicie |
+| Alterar porta (ex: para 3030)  | Edite o `docker-compose.yml` e reinicie |
 
 ---
 
@@ -144,7 +144,7 @@ volumes:
 
 - [x] Dockerfile pronto e funcional
 - [x] docker-compose com `.env.local`
-- [x] Porta 3002 disponível
+- [x] Porta 3030 disponível
 - [x] Scripts testados com `pnpm`
 - [x] Compatível com Vercel (deploy opcional)
 

@@ -11,42 +11,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Clona o repositório
-      - name: Checkout repository
+      # Etapa 1: Clona o repositório
+      - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      # 2. Instala Node.js e configura cache para pnpm
-      - name: Setup Node.js
+      # Etapa 2: Instala o Node.js na versão 20
+      - name: Configura Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3. Instala pnpm manualmente (corrige erro de "pnpm não encontrado")
-      - name: Install pnpm
+      # Etapa 3: Instala o PNPM globalmente
+      - name: Instala o PNPM
         run: npm install -g pnpm@10.7.1
 
-      # 4. Confirma versão instalada (debug opcional)
-      - name: Check pnpm version
+      # Etapa 4: Exibe a versão do PNPM instalada
+      - name: Verifica versão do PNPM
         run: pnpm -v
 
-      # 5. Instala dependências com lockfile travado
-      - name: Install dependencies
+      # Etapa 5: Instala dependências com lockfile travado
+      - name: Instala dependências
         run: pnpm install --frozen-lockfile
 
-      # 6. Valida formatação com Prettier
-      - name: Check code formatting (Prettier)
+      # Etapa 6: Verifica formatação do código com Prettier
+      - name: Valida formatação (Prettier)
         run: pnpm exec prettier --check .
 
-      # 7. Roda testes (Jest)
-      - name: Run tests
+      # Etapa 7: Roda o linter (ESLint)
+      - name: Valida padrões de código (ESLint)
+        run: pnpm lint
+
+      # Etapa 8: Executa os testes com Jest
+      - name: Executa testes automatizados
         run: pnpm test
 
-      # 8. Build do projeto
-      - name: Build Next.js application
+      # Etapa 9: Gera o build da aplicação Next.js
+      - name: Realiza build do frontend
         run: pnpm run build
+        env:
+          API_INTERNAL_URL: http://trelloia-backend:3000
 
-      # 9. Deploy na Vercel apenas no push da main
-      - name: Deploy to Vercel
+      # Etapa 10: Realiza o deploy para a Vercel (apenas no push para main)
+      - name: Realiza deploy na Vercel
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: amondnet/vercel-action@v25
         with:

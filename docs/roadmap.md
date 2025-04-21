@@ -8,7 +8,7 @@ Este roadmap tem como objetivo documentar o progresso e os planos futuros do pro
 
 - [x] Configuração inicial com Next.js 15, TypeScript, Tailwind, ESLint, Prettier
 - [x] Setup de Jest e Testing Library com cobertura funcional
-- [x] Dockerfile e docker-compose funcional (porta 3002)
+- [x] Dockerfile e docker-compose funcional (porta 3030)
 - [x] Deploy gratuito via Vercel
 - [x] Estrutura de pastas escalável e modular
 - [x] Telas de login e cadastro com validação Yup + React Hook Form

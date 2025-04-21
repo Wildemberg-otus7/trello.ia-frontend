@@ -6,8 +6,11 @@ import { LoginFormData } from '../validation/login.schema';
 import { FormState } from '@/types/formStates';
 
 export const loginAction = async (_: FormState, data: LoginFormData) => {
-  console.log('data: ', data, process.env.NEXT_PUBLIC_API_URL);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+  const backendUrl = process.env.API_INTERNAL_URL ?? 'http://trelloia-backend:3000';
+
+  console.log('data: ', data, backendUrl);
+  debugger;
+  const response = await fetch(`${backendUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -33,6 +36,5 @@ export const loginAction = async (_: FormState, data: LoginFormData) => {
     });
   }
 
-  // ✅ Redirecionamento server-side
   redirect('/dashboard');
 };

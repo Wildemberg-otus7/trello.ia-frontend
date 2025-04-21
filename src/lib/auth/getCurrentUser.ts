@@ -9,7 +9,7 @@ export async function getCurrentUser() {
   if (!token) return null;
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+    const res = await fetch(`${process.env.API_INTERNAL_URL}/auth/me`, {
       cache: 'no-store',
       credentials: 'include',
       headers: {
