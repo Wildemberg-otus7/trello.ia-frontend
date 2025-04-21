@@ -10,5 +10,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     redirect('/dashboard');
   }
 
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-sky-50 to-white p-4">
+      <div className="w-full max-w-md">{children}</div>
+    </div>
+  );
 }
