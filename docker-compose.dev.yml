@@ -9,11 +9,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.next
     env_file:
       - .env.local
-    environment:
-      - API_INTERNAL_URL=http://trelloia-backend:3000
     command: pnpm dev
     networks:
       - trelloia-shared

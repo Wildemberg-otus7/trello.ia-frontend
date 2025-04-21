@@ -6,11 +6,7 @@ import { LoginFormData } from '../validation/login.schema';
 import { FormState } from '@/types/formStates';
 
 export const loginAction = async (_: FormState, data: LoginFormData) => {
-  const backendUrl = process.env.API_INTERNAL_URL ?? 'http://trelloia-backend:3000';
-
-  console.log('data: ', data, backendUrl);
-  debugger;
-  const response = await fetch(`${backendUrl}/auth/login`, {
+  const response = await fetch(`${process.env.API_INTERNAL_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

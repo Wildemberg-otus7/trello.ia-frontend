@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowRight, Lock } from 'lucide-react';
 
 import {
-    ExtendedResetPasswordFormData,
+  ExtendedResetPasswordFormData,
   ResetPasswordFormData,
   resetPasswordFormSchema,
 } from './validation/resetPasswordForm.schema';
@@ -36,21 +36,19 @@ export function ResetPasswordForm() {
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: yupResolver(resetPasswordFormSchema),
-    mode: 'onBlur', 
+    mode: 'onBlur',
   });
 
   const onSubmit = (data: ResetPasswordFormData) => {
-    console.log('object: ', token, data);
     if (!token) return;
     startTransition(() => action({ ...data, token }));
   };
 
   useEffect(() => {
-    console.log(token, errors);
     if (state.success) {
       setTimeout(() => router.push('/login'), 2000);
     }
-  }, [state.success, router, errors]);
+  }, [state.success, router]);
 
   return (
     <div className="w-full space-y-6">

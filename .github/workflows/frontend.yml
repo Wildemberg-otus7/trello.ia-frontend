@@ -49,7 +49,8 @@ jobs:
       - name: Realiza build do frontend
         run: pnpm run build
         env:
-          API_INTERNAL_URL: http://trelloia-backend:3000
+          NODE_ENV: production
+          API_INTERNAL_URL: ${{ secrets.API_INTERNAL_URL }}
 
       # Etapa 10: Realiza o deploy para a Vercel (apenas no push para main)
       - name: Realiza deploy na Vercel

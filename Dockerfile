@@ -1,32 +1,51 @@
-# Dockerfile
-FROM node:20-alpine
+# Etapa de build
+FROM node:23-alpine AS builder
 
-# Instala o que o pnpm precisa
-RUN apk add --no-cache curl bash
+ENV NODE_ENV=production
+ENV NEXT_FONT_GOOGLE_FETCH_DISABLE=1
 
-# Ativa o pnpm com corepack
+# Dependências necessárias
+RUN apk add --no-cache bash curl
+
+# Corepack + pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Define diretório de trabalho
 WORKDIR /app
 
-# Copia apenas arquivos de dependência primeiro
+# Instala apenas dependências necessárias
 COPY package.json pnpm-lock.yaml ./
-
-# Instala as dependências com lockfile travado
 RUN pnpm install --frozen-lockfile
 
 # Copia o restante do projeto
 COPY . .
 
-# Desativa tentativa de baixar fontes no build
-ENV NEXT_FONT_GOOGLE_FETCH_DISABLE=1
-
-# Build da aplicação Next.js
+# Build da aplicação
 RUN pnpm build
 
-# Expõe a porta configurada (3002)
-EXPOSE 3002
+# Remove dependências de dev
+RUN pnpm prune --prod
 
-# Inicia o app no modo desenvolvimento
-CMD ["pnpm", "run", "dev"]
+# Etapa final - Imagem leve e segura para execução
+FROM node:23-alpine
+
+ENV NODE_ENV=production
+ENV NEXT_FONT_GOOGLE_FETCH_DISABLE=1
+
+# Usuário não-root (boa prática)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Dependências mínimas
+RUN apk add --no-cache bash curl
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copia já com as permissões corretas, evita o uso de `chown` separado
+COPY --chown=appuser:appgroup --from=builder /app ./
+
+USER appuser
+
+EXPOSE 3030
+
+# Executa o app
+CMD ["pnpm", "start"]

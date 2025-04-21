@@ -3,7 +3,6 @@
 import { ExtendedResetPasswordFormData } from '../validation/resetPasswordForm.schema';
 import { FormState } from '@/types/formStates';
 
-
 export async function resetPasswordAction(
   _prevState: FormState,
   formData: ExtendedResetPasswordFormData,
@@ -25,11 +24,8 @@ export async function resetPasswordAction(
     }
 
     return { success: true };
-  } catch (error: any) {
-    if (error.name === 'ValidationError') {
-      return { error: 'Preencha os campos corretamente.' };
-    }
-
+  } catch (error) {
+    console.error(error);
     return { error: 'Erro ao conectar com o servidor. Tente novamente.' };
   }
 }
